@@ -1,25 +1,47 @@
 /**
  * Arquivo: models/employee.js
  * Author: Glaucia Lemos
- * Description: Arquivo responsável pelo modelo do 'Employee' para realizar a conexão com a base 
- *  de dados via Moongose.
- * Data: 13/02/2016
+ * Updated by: Rodrigo Lira
+ * Description: Arquivo responsável pelo modelo do 'Employee' para realizar a conexão com a base
+ *  de dados via sequelize.
+ * Updated by (Date): 23/01/2021
  */
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+ const Sequelize = require('sequelize');
 
-//Aqui vem a definição da esquema do 'Employee':
-var EmployeeSchema = new Schema(
-    {
-        name: { type: String, required: true },
-        email:{ type: String, required: true },
-        department: { type: String, required: true },
+ //CONEXÃO COM O BANCO
+ const sequelize = new Sequelize({
+   dialect: 'sqlite',
+   storage: 'database.sqlite'
+});
+
+const employee_model = sequelize.define('employee',{
+    id:{
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
     },
-    {
-        versionKey: false
-    }
-);
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    department: {
+      type: Sequelize.STRING,
+      allowNull: false,
+  }},
+  {
+      // don't add the timestamp attributes (updatedAt, createdAt)
+      timestamps: false
 
-//Aqui realizará a exportação do 'EmployeeSchema' para usar em qualquer lugar:
-module.exports = mongoose.model('employee', EmployeeSchema);
+  })
+
+employee_model.sync();
+console.log("If not exist, the table for the Employee model was just created!");
+
+//Aqui realizará a exportação do 'EmployeeModel' para usar em qualquer lugar:
+module.exports = employee_model

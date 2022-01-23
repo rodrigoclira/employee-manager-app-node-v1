@@ -1,74 +1,78 @@
  /*
  * Arquivo: routes/employee.js
  * Author: Glaucia Lemos
+ * Updated by: Rodrigo Lira
  * Description: Arquivo responsável pelas rotas das APIS
  * Data: 13/02/2017
+ * Updated by (Date): 23/01/2021
  */
 
-var mongoose = require('mongoose');
+var sequelize = require('sequelize');
+const { Op } = require("sequelize");
+
 var Employee = require('../models/employee');
 
 /* 1) Método: Selecionar Funcionários (acessar em: GET http://localhost:8000/employee */
     function selecionarTodosFuncionarios(req, res) {
-
         //Aqui estamos definindo a query do banco para que possa retornar todos os funcionários:
-        var query = Employee.find({});
-        query.exec(function(error, employees) {
-            if(error)
-                res.send(error);
-            //Caso não haja erros, então retornará para o usuário:
-            res.json(employees);
-        });       
+        Employee.findAll().then(function (employee) {
+            res.json(employee);
+        });
     }
-
 
 /* 2) Método: Criar Funcionário (acessar em: POST http://localhost:8000/employee) */
     function adicionarFuncionario(req, res) {
 
-        //Criamos um novo funcionario:
-        var novoFunc = new Employee(req.body);
-
         //Aqui estaremos salvando todos os campos na base de dados:
-        novoFunc.save(function(error, employee) {
-            if(error) {
-                res.send(error);
-            } else {
-                res.json({ message: "Funcionário adicionado com Sucesso!", employee });
+        Employee.create(
+            {
+                name: req.body.name,
+                email: req.body.email,
+                department: req.body.department
             }
+        ).then(function (employee){
+            res.json({ message: "Funcionário adicionado com Sucesso!", employee});
+
         });
+
     }
 
-/** 3)  Método: Selecionar Por Id (acessar em: GET http://localhost:8000/employee/:id ) */ 
+/** 3)  Método: Selecionar Por Id (acessar em: GET http://localhost:8000/employee/:id ) */
     function selecionarFuncionarioPorId(req, res) {
-        Employee.findById(req.params.id, function(error, employee) {
-            if(error)
-                res.send(error);
-
-                //Caso não haja erros, retornar para o usuário:
+            Employee.findAll(
+                {
+                    where: { id: req.params.id}
+                }).then(function (employee) {
+                console.log(employee)
                 res.json(employee);
-        });
+            });
     }
 
-/** 4) Método: Excluir (acessar em: http://localhost:8000/employee/:id ) */ 
+/** 4) Método: Excluir (acessar em: http://localhost:8000/employee/:id ) */
     function excluirFuncionario(req, res) {
-        Employee.remove({ _id: req.params.id }, function(error, resultado) {
-            res.json({ message: "Funcionário excluído com Sucesso!", resultado });
-        });
+        Employee.destroy({
+              where: {
+                id: req.params.id
+              }
+          });
+
+        res.json({ message: "Funcionário removido com sucesso!"});
     }
 
 /* 5) Método: Atualizar (acessar em: PUT http://localhost:8000/employee/:id ) */
     function atualizarFuncionario(req, res) {
         //Para que eu possa atualizar um Funcionário, preciso primeiramente encontrar o id do Funcionário que desejo atualizar:
-        Employee.findById({ _id: req.params.id }, function(error, employee) {
-            if(error)
-                res.send(error);
-            
-            //Caso não haja erros, retornar a atualização para o usuário:
-            Object.assign(employee, req.body).save(function(error, employee) {
-                if(error)
-                    res.send(error);
-                res.json({ message: "Funcionário Atualizado com Sucesso", employee });
-            });
+        Employee.update({
+                name: req.body.name,
+                email: req.body.email,
+                department: req.body.department
+             }, {
+            where: {
+                id: req.params.id
+            }
+           }).then(function (employee){
+            res.json({ message: "Funcionário atualizado com Sucesso!"});
+
         });
     }
 
