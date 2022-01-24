@@ -32,8 +32,11 @@ var Employee = require('../models/employee');
             }
         ).then(function (employee){
             res.json({ message: "Funcionário adicionado com Sucesso!", employee});
-
-        });
+        }).catch(function(err){
+            res.status(200);
+            console.log({ errors: err });
+            res.json({ errors: err });
+        })
 
     }
 
