@@ -3,12 +3,11 @@
  * Author: Glaucia Lemos
  * Description: Arquivo responsável por realizar o TDD com Mocha & Chai no lado do server da nossa app.
  * Data: 13/02/2017
- * 
+ *
  */
 
 process.env.NODE_ENV = 'test';
 
-var mongoose = require('mongoose');
 var Employee = require('../app/models/employee');
 
 //Aqui estamos declarando as dependências necessárias para realizar os nossos testes!
@@ -24,12 +23,12 @@ describe('Employees', function() {
     beforeEach(function(done) {
 
         //Sempre depois de executar o nosso teste, iremos limpar a nossa base de dados:
-        Employee.remove({}, function(error) {
-            done();
-        });
+        Employee.destroy({truncate: true});
+        done();
+
     });
 
-/** 
+/**
  * Teste da rota: /GET
  */
 describe('/GET employee', function() {
@@ -47,36 +46,38 @@ describe('/GET employee', function() {
     });
 });
 
-/** 
+/**
  * Teste da rota: /POST
  */
 describe('/POST employee', function() {
     it('Não deve retornar o POST do funcionário criado, uma vez que não foi definido o campo: email', function(done) {
-       
+
         //Aqui simulamos a criação de um Funcionário, porém sem incluir o email:
         var employee = {
             name: "Glaucia Lemos",
             department: "Information Technology"
         }
         chai.request(server)
-        .post('/employee')
+        .post('/employee/')
         .send(employee)
         .end(function(error, res) {
             res.should.have.status(200);
             res.body.should.be.a('object');
             res.body.should.have.property('errors');
-            res.body.errors.should.have.property('email');
-            res.body.errors.email.should.have.property('kind').eql('required');
+            res.body.errors.should.have.property('name').eql('SequelizeValidationError');
+            res.body.errors.should.have.property('errors');
+            //res.body.errors.should.have.property('message').eql('employee.email cannot be null');
+            //res.body.errors.email.should.have.property('kind').eql('required');
             done();
         });
     });
-    
+
     it('Deve Criar um Funcionário', function(done) {
         var employee = {
             name: "Glaucia Lemos",
             email: "glaucia@luizalabs.com",
             department: "Information Technology"
-        } 
+        }
         chai.request(server)
         .post('/employee')
         .send(employee)
@@ -88,40 +89,57 @@ describe('/POST employee', function() {
             res.body.employee.should.have.property('email');
             res.body.employee.should.have.property('department');
         done();
-        }); 
+        });
     });
 });
 
 
-/** 
+/**
  * Teste da rota: /GET/:id
  */
 describe('/GET/:id employee', function() {
-    it('Deve retornar um Funcionário dado o id', function(done) {
-        var employee = new Employee({
+    let func_id = -1;
+
+    it('Deve Criar um Funcionário para conseguir acessar via api', function(done) {
+        var employee = {
             name: "Glaucia Lemos",
             email: "glaucia@luizalabs.com",
             department: "Information Technology"
-        });
-        employee.save(function(error, employee) {
-            chai.request(server)
-            .get('/employee/' + employee.id)
-            .send(employee)
-            .end(function(error, res) {
-               res.should.be.a('object');
-               res.body.should.have.property('name'); 
-               res.body.should.have.property('email');
-               res.body.should.have.property('department');
-               res.body.should.have.property('_id').eql(employee.id);              
-        done();
+        }
+        chai.request(server)
+        .post('/employee')
+        .send(employee)
+        .end(function(error, res) {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message').eql('Funcionário adicionado com Sucesso!');
+            res.body.employee.should.have.property('name');
+            res.body.employee.should.have.property('email');
+            res.body.employee.should.have.property('department');
+            func_id = res.body.id
+
+            it('Deve retornar um Funcionário dado o id criado', function(done) {
+                chai.request(server)
+                .get('/employee/' + func_id + '/')
+                .end(function(error, res) {
+                   res.should.be.a('object');
+                   res.body.should.have.property('name');
+                   res.body.should.have.property('email');
+                   res.body.should.have.property('department');
+                   res.body.should.have.property('_id').eql(employee.id);
+                   done();
+                });
             });
+            done();
         });
-    });
+    })
+
+
 });
 
 /**
  * Teste da rota: /PUT/:id
- 
+
 describe('/PUT/:id employee', function(){
 	  it('Deve atualizar um Funcionário dado o id', function(done){
 	  	var employee = new Employee({name: "Jurema Lemos", email: "jurema@luizalabs.com", department: "Customer"})
@@ -141,22 +159,42 @@ describe('/PUT/:id employee', function(){
 });
 */
 
-/** 
+/**
  * Teste da rota: /DELETE/:id
  */
 describe('/DELETE/:id empoloyee', function(){
-	  it('Deve excluir um Funcionário dado o id', function(done){
-	  	var employee = new Employee({name: "Jurema Lemos", email: "ju@luizalabs.com", department: "Customer"})
-	  	employee.save(function(error, employee){
-				chai.request(server)
-			    .delete('/employee/' + employee.id)
-			    .end(function(error, res){
-				  	res.should.have.status(200);
+    let func_id = -1;
+
+    it('Deve Criar um Funcionário para conseguir acessar via api', function(done) {
+        var employee = {
+            name: "Glaucia Lemos",
+            email: "glaucia@luizalabs.com",
+            department: "Information Technology"
+        }
+        chai.request(server)
+        .post('/employee')
+        .send(employee)
+        .end(function(error, res) {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message').eql('Funcionário adicionado com Sucesso!');
+            res.body.employee.should.have.property('name');
+            res.body.employee.should.have.property('email');
+            res.body.employee.should.have.property('department');
+            func_id = res.body.id
+
+            it('Deve excluir um Funcionário dado o id=' + func_id, function(done) {
+                chai.request(server)
+                .delete('/employee/' + func_id + '/')
+                .end(function(error, res) {
+                    res.should.have.status(200);
 				  	res.body.should.be.a('object');
 				  	res.body.should.have.property('message').eql('Funcionário excluído com Sucesso!');
-			      done();
-			    });
-		  });
-	  });
+                   done();
+                });
+            });
+            done();
+        });
+    })
    });
 });
