@@ -1,6 +1,6 @@
 # Luizalabs Employee Manager Application (Versão Node.Js)
 
-Desenvolvimento de uma web app 'fictícia' em Node.Js, Express.js, MongoDb e com TDD (Mocha & Chai) 
+Desenvolvimento de uma web app 'fictícia' em Node.Js, Express.js, Sequelize e com TDD (Mocha & Chai) 
 que simulará uma aplicação que gerenciará as informações do funcionários através de uma API 
 que permite integrá-la a outros sistemas. A aplicação precisa ter:
 
@@ -44,8 +44,7 @@ E o resultado do JSon (Response) deverá ser (exemplo):
 - Node.Js;
 - Express.Js ~ v.4.0;
 - Conceito RestFul;
-- MongoDb;
-- Mongoose ~4.x;
+- Sequelize ~4.x;
 - JSON data (para retornar os dados);
 - PostMan (testar a API criada);
 - Mocha;
@@ -72,13 +71,7 @@ Para começar, você deve simplesmente clonar o repositório do projeto na sua m
 Antes de instalar as dependências no projeto, você precisa já ter instalado na sua máquina:
 
 * **Node.Js**: Caso não tenha, basta realizar o download [Aqui](https://nodejs.org/en/)
-* **MongoDb**: Caso também não tenha, basta realizar o download [Aqui](https://www.mongodb.com/download-center#community)
 
-p.s.: o MongoDb caso você decida conectar a sua base de dados de maneira local. Caso não, basta usar 
-a base de dados do MongoDb em Cloud:
-
-* [Modulus](https://modulus.io/)
-* [MLab](https://mlab.com/)
 
 ### Instalando as Dependências (via Windows): 
 
@@ -106,8 +99,6 @@ Ao digitar a instrução acima, automaticamente ele irá baixar todas as depend�
 Estarei disponibilizando os links onde explicam como baixar:
 
 - Node.Js: [AQUI](https://nodejs.org/en/download/package-manager/)
-- MongoDb: [AQUI](https://docs.mongodb.com/v3.0/administration/install-on-linux/)
-
 
 
 ## Padrão das Rotas Criadas: 
@@ -132,23 +123,9 @@ Bom, agora na mesma tela do cmd, basta iniciar o server para o projeto ser execu
 
 ```
 
-Depois, você precisará abrir um outro terminal na sua máquina e iniciar o MongoDb. Basta digitar na tela do cmd o seguinte comando:
-
-```
-> mongod
-
-```
-
-Caso o MongoDb esteja devidamente instalado em sua máquina, ele iniciará o serviço mostrando que a port 27017 foi iniciada.
-
 
 Agora, abre a página da aplicação em `http://localhost:8000/api`. E pronto a aplicação será executada de maneira local na sua máquina.        
 
-
-p.s.: no projeto, disponibilizei 2 maneiras de realizar a conexão de dados com o MongoDb através do Mongoose:
-
-* **De maneira local**: utilizando o MongoDb;
-* **De maneira em cloud**: utilizando o Modulus;
 
 ## Executando os Testes:
 
@@ -158,10 +135,4 @@ Basta executar o comando:
 > npm test
 
 ```
-
-
-## Observações Finais:
-Eu sei que vocês não me pediram para desenvolver essa aplicação através da linguagem Node.Js e MongoDb.
-Porém, como na descrição da vaga fala que é um plus saber: Node.Js e Bancos NoSql (nesse caso eu usei o 
-MongoDb), então eu decidi fazer esse app também para análise de vocês!
 
