@@ -136,9 +136,3 @@ Basta executar o comando:
 
 ```
 
-
-## Observações Finais:
-Eu sei que vocês não me pediram para desenvolver essa aplicação através da linguagem Node.Js e MongoDb.
-Porém, como na descrição da vaga fala que é um plus saber: Node.Js e Bancos NoSql (nesse caso eu usei o 
-MongoDb), então eu decidi fazer esse app também para análise de vocês!
-
